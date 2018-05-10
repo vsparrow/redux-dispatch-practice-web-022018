@@ -1,0 +1,115 @@
+REDUX
+
+current state
+state = {
+  user: {
+    name: 'bob',
+    hometown: 'philly'
+  },
+  interests: [
+    {
+      name: 'pokemon',
+      type: 'game'
+    },
+    {
+      name: 'game of thrones',
+      type:'tv show'
+    }
+  ]
+}
+
+update state
+action = {
+  type: 'ADD_INTEREST',
+  newInterest: {
+    name: 'hockey',
+    type: 'sport'
+  }
+}
+ Any time we update the state in Redux, we must create an action first.
+
+ let state = {count: 0}
+let action = {type: 'INCREASE_COUNT'}
+Actions always need a type property so the function knows what to do.
+customary to use a switch case statement.
+
+when we change the state we never return null or undefined. We'll cover this by adding a default case to our function.
+function changeState(state, action){
+  switch (action.type) {
+    case 'INCREASE_COUNT':
+      return {count: state.count + 1}
+    default:
+      return state;
+  }
+}
+
+let state = {count: 0}
+let action = {type: 'INCREASE_COUNT'}
+
+changeState(state, action)
+// => {count: 1}
+
+ An action gets sent to a reducer which then updates the state of the application.
+ An important thing to note about reducers is that they are pure functions. Let's remember the characteristics of pure functions:
+
+Pure functions are only determined by their input values
+Pure Functions have no side effects. By this we mean pure functions do not have any effect outside of the function. They only return a value.
+
+The object returned is not the same object that is passed as an argument to the function,
+but rather a new object that is constructed each time our reducer is called
+
+? using Object.assign() to create copies of objects with new or updated values.?
+(older compatible version)
+  let dog = {id: 1, name: 'scooby', color: 'brown', age: 4};
+  // if scooby had a birthday, we could write:
+  let olderDog = Object.assign({}, dog, {age: dog.age + 1})
+vs spread (newer)
+  let dog = {id: 1, name: 'scooby', color: 'brown', age: 4};
+  let olderDog = {...dog, age: dog.age + 1}
+
+///////////////////////// in src/reducers
+
+In managePresents.js, write a function called managePresents that takes in an action and the previous state as its argument.
+In manageFriends.js write a function called manageFriends that takes in an action and the previous state as its argument. Unlike managePresents, here our action will also have an additional property called friends, sometimes an action contains multiple attributes for producing a new state.
+
+export function managePresents(state = {
+  numberOfPresents: 0,
+}, action) {
+  switch(action.type) {
+
+    case "INCREASE":
+      return Object.assign({}, state, {
+        numberOfPresents: state.numberOfPresents + 1
+      });
+
+    default:
+      return state;
+  }
+};
+export function manageFriends(state = {
+  friends: [],
+}, action) {
+  switch(action.type) {
+
+    case "ADD_FRIEND":
+      return Object.assign({}, state, {
+        friends: [
+          ...state.friends,
+          action.friend
+        ]
+      });
+
+    case "REMOVE_FRIEND":
+      const removalIndex = state.friends.findIndex(friend => friend.id === action.id);
+      return Object.assign({}, state, {
+        friends: [
+          ...state.friends.slice(0, removalIndex),
+          ...state.friends.slice(removalIndex + 1)
+        ]
+      });
+
+    default:
+      return state;
+
+  }
+};
